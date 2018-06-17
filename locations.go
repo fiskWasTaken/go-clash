@@ -1,22 +1,71 @@
 package clash
 
+import "fmt"
+
+type LocationPager struct {
+	Items []Location `json:"items"`
+	Paging struct {
+		Cursors struct{} `json:"cursors"`
+	} `json:"paging"`
+}
+
 type Location struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	IsCountry   bool   `json:"isCountry"`
+	CountryCode string `json:"countryCode,omitempty"`
+}
+
+type LocationRankingPager struct {
+	Items []LocationRanking `json:"items"`
+	Paging struct {
+		Cursors struct{} `json:"cursors"`
+	} `json:"paging"`
 }
 
 type LocationRanking struct {
+	Tag          string   `json:"tag"`
+	Name         string   `json:"name"`
+	Rank         int      `json:"rank"`
+	PreviousRank int      `json:"previousRank"`
+	Location     Location `json:"location"`
+	BadgeId      int      `json:"badgeId"`
+	ClanScore    int      `json:"clanScore"`
+	Members      int      `json:"members"`
 }
 
-// todo
-func (c *Client) GetLocations() ([]Location, error) {
-	return []Location{}, nil
+func (c *Client) GetLocations() (LocationPager, error) {
+	req, err := c.newRequest("GET", "/v1/locations", nil)
+
+	var locations LocationPager
+
+	if err == nil {
+		_, err = c.do(req, &locations)
+	}
+
+	return locations, err
 }
 
-// todo
 func (c *Client) GetLocation(id int) (Location, error) {
-	return Location{}, nil
+	req, err := c.newRequest("GET", fmt.Sprintf("/v1/locations/%d", id), nil)
+
+	var location Location
+
+	if err == nil {
+		_, err = c.do(req, &location)
+	}
+
+	return location, err
 }
 
-// todo
-func (c *Client) GetLocationRankings(id int, rankingType int) {
+func (c *Client) GetLocationRankings(id int, rankingType string) (LocationRankingPager, error) {
+	req, err := c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/%s", id, rankingType), nil)
 
+	var rankings LocationRankingPager
+
+	if err == nil {
+		_, err = c.do(req, &rankings)
+	}
+
+	return rankings, err
 }
