@@ -5,7 +5,11 @@ import (
 )
 
 type ClanQuery struct {
-
+	LocationId int
+	MinScore   int
+	MinMembers int
+	MaxMembers int
+	Name       string
 }
 
 type Clan struct {
@@ -24,6 +28,13 @@ type Clan struct {
 	ClanChestMaxLevel int          `json:"clanChestMaxLevel"`
 	Members           int          `json:"members"`
 	MemberList        []ClanMember `json:"memberList"`
+}
+
+type ClanPaging struct {
+	Items []Clan `json:"items"`
+	Paging struct {
+		Cursors struct{} `json:"cursors"`
+	} `json:"paging"`
 }
 
 type MemberPaging struct {
@@ -140,10 +151,33 @@ func (c *Client) GetClanMembers(hashtag string) (MemberPaging, error) {
 	return members, err
 }
 
-// todo
-func (c *Client) SearchClans(name string) ([]Clan, error) {
+func (c *Client) SearchClans(query ClanQuery) (ClanPaging, error) {
 	req, err := c.newRequest("GET", "/v1/clans", nil)
-	var clans []Clan
+	q := req.URL.Query()
+
+	if query.LocationId > 0 {
+		q.Add("locationId", fmt.Sprintf("%d", query.LocationId))
+	}
+
+	if query.MinScore > 0 {
+		q.Add("minScore", fmt.Sprintf("%d", query.MinScore))
+	}
+
+	if query.MinMembers > 1 {
+		q.Add("minMembers", fmt.Sprintf("%d", query.MinMembers))
+	}
+
+	if query.MaxMembers <= 50 {
+		q.Add("maxMembers", fmt.Sprintf("%d", query.MaxMembers))
+	}
+
+	if len(query.Name) > 3 {
+		q.Add("name", fmt.Sprintf("%d", query.Name))
+	}
+
+	req.URL.RawQuery = q.Encode()
+
+	var clans ClanPaging
 
 	if err == nil {
 		_, err = c.do(req, &clans)

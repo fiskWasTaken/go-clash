@@ -3,11 +3,11 @@ package clash
 import "fmt"
 
 type TournamentMember struct {
-	Tag string `json:"tag"`
-	Name string `json:"name"`
-	Score int `json:"score"`
-	Rank int `json:"rank"`
-	Clan PlayerClan`json:"clan"`
+	Tag   string     `json:"tag"`
+	Name  string     `json:"name"`
+	Score int        `json:"score"`
+	Rank  int        `json:"rank"`
+	Clan  PlayerClan `json:"clan"`
 }
 
 type Tournament struct {
