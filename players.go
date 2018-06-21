@@ -70,6 +70,16 @@ type Player struct {
 	CurrentFavouriteCard  FavouriteCard `json:"currentFavouriteCard"`
 }
 
+type VerificationResult struct {
+	Tag    string `json:"tag"`
+	Token  string `json:"token"`
+	Status string `json:"status"`
+}
+
+func (v *VerificationResult) isValid() bool {
+	return v.Status == "ok"
+}
+
 type GameMode struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -99,6 +109,8 @@ type BattleLogEntry struct {
 	Opponent      []BattleLogPlayer `json:"opponent"`
 }
 
+type BattleLogEntries []BattleLogEntry
+
 type UpcomingChest struct {
 	Index int    `json:"index"`
 	Name  string `json:"name"`
@@ -120,10 +132,10 @@ func (c *Client) GetPlayerUpcomingChests(hashtag string) (UpcomingChests, error)
 	return chests, err
 }
 
-func (c *Client) GetPlayerBattleLog(hashtag string) ([]BattleLogEntry, error) {
+func (c *Client) GetPlayerBattleLog(hashtag string) (BattleLogEntries, error) {
 	url := fmt.Sprintf("/v1/players/%s/battlelog", normaliseHashtag(hashtag))
 	req, err := c.newRequest("GET", url, nil)
-	var list []BattleLogEntry
+	var list BattleLogEntries
 
 	if err == nil {
 		_, err = c.do(req, &list)
@@ -142,4 +154,16 @@ func (c *Client) GetPlayer(hashtag string) (Player, error) {
 	}
 
 	return player, err
+}
+
+func (c *Client) VerifyPlayerToken(hashtag string, token string) (VerificationResult, error) {
+	url := fmt.Sprintf("/v1/players/%s/verifytoken", normaliseHashtag(hashtag))
+	req, err := c.newRequest("POST", url, map[string]string{"token": token})
+	var result VerificationResult
+
+	if err == nil {
+		_, err = c.do(req, &result)
+	}
+
+	return result, err
 }
