@@ -43,10 +43,10 @@ type Arena struct {
 }
 
 type Season struct {
-	Rank         int `json:"rank"`
-	Trophies     int `json:"trophies"`
-	BestTrophies int `json:"bestTrophies"`
-	ID           int `json:"string"`
+	Rank         int    `json:"rank"`
+	Trophies     int    `json:"trophies"`
+	BestTrophies int    `json:"bestTrophies"`
+	ID           string `json:"id"`
 }
 
 type LeagueStatistics struct {
