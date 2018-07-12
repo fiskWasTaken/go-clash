@@ -2,6 +2,7 @@ package clash
 
 import (
 	"fmt"
+	"time"
 )
 
 type ClanQuery struct {
@@ -75,6 +76,10 @@ type WarLogEntry struct {
 	Standings    []WarLogStanding     `json:"standings"`
 }
 
+func (w *WarLogEntry) ParseCreatedDate() (time.Time, error) {
+	return time.Parse(TimeLayout, w.CreatedDate)
+}
+
 type WarLogPaging struct {
 	Items []WarLogEntry `json:"items"`
 	Paging struct {
@@ -87,6 +92,10 @@ type ClanWar struct {
 	CollectionEndTime string               `json:"collectionEndTime"`
 	Clan              ClanWarStanding      `json:"clan"`
 	Participants      []ClanWarParticipant `json:"participants"`
+}
+
+func (w *ClanWar) ParseCollectionEndTime() (time.Time, error) {
+	return time.Parse(TimeLayout, w.CollectionEndTime)
 }
 
 type ClanMember struct {

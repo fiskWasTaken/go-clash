@@ -9,6 +9,9 @@ import (
 	"fmt"
 )
 
+// This is the time format used by time fields -- we'll be using it to provide cleaner APIs.
+var TimeLayout = "20060102T150405.000Z"
+
 type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string

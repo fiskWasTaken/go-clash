@@ -1,6 +1,9 @@
 package clash
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type TournamentMember struct {
 	Tag   string     `json:"tag"`
@@ -23,6 +26,10 @@ type Tournament struct {
 	Duration            int                `json:"duration"`
 	CreatedTime         string             `json:"createdTime"`
 	MembersList         []TournamentMember `json:"membersList"`
+}
+
+func (t *Tournament) ParseCreatedTime() (time.Time, error) {
+	return time.Parse(TimeLayout, t.CreatedTime)
 }
 
 type TournamentPaging struct {
