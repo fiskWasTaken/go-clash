@@ -25,11 +25,16 @@ type Tournament struct {
 	PreparationDuration int                `json:"preparationDuration"`
 	Duration            int                `json:"duration"`
 	CreatedTime         string             `json:"createdTime"`
+	StartedTime         string             `json:"startedTime"`
 	MembersList         []TournamentMember `json:"membersList"`
 }
 
 func (t *Tournament) ParseCreatedTime() (time.Time, error) {
 	return time.Parse(TimeLayout, t.CreatedTime)
+}
+
+func (t *Tournament) ParseStartedTime() (time.Time, error) {
+	return time.Parse(TimeLayout, t.StartedTime)
 }
 
 type TournamentPaging struct {
