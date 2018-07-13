@@ -44,20 +44,42 @@ type TournamentPaging struct {
 	} `json:"paging"`
 }
 
-func (c *Client) GetTournament(hashtag string) (Tournament, error) {
-	url := fmt.Sprintf("/v1/tournaments/%s", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+type TournamentInterface struct {
+	c *Client
+	tag string
+}
+
+type TournamentsInterface struct {
+	c *Client
+}
+
+func (c *Client) Tournaments() *TournamentsInterface {
+	return &TournamentsInterface{c}
+}
+
+func (c *Client) Tournament(tag string) *TournamentInterface {
+	return &TournamentInterface{c, tag}
+}
+
+// Get information about a single tournament by a tournament tag.
+func (i *TournamentInterface) Get() (Tournament, error) {
+	url := fmt.Sprintf("/v1/tournaments/%s", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var tournament Tournament
 
 	if err == nil {
-		_, err = c.do(req, &tournament)
+		_, err = i.c.do(req, &tournament)
 	}
 
 	return tournament, err
 }
 
-func (c *Client) SearchTournaments(name string) (TournamentPaging, error) {
-	req, err := c.newRequest("GET", "/v1/tournaments", nil)
+// Search all tournaments by name.
+//
+// It is not possible to specify ordering for results so clients should not
+// rely on any specific ordering as that may change in the future releases of the API.
+func (i *TournamentsInterface) Search(name string) (TournamentPaging, error) {
+	req, err := i.c.newRequest("GET", "/v1/tournaments", nil)
 	q := req.URL.Query()
 	q.Add("name", name)
 	req.URL.RawQuery = q.Encode()
@@ -65,7 +87,7 @@ func (c *Client) SearchTournaments(name string) (TournamentPaging, error) {
 	var tournaments TournamentPaging
 
 	if err == nil {
-		_, err = c.do(req, &tournaments)
+		_, err = i.c.do(req, &tournaments)
 	}
 
 	return tournaments, err

@@ -134,49 +134,66 @@ type UpcomingChests struct {
 	Items []UpcomingChest `json:"items"`
 }
 
-func (c *Client) GetPlayerUpcomingChests(hashtag string) (UpcomingChests, error) {
-	url := fmt.Sprintf("/v1/players/%s/upcomingchests", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+type PlayerInterface struct {
+	c   *Client
+	tag string
+}
+
+func (c *Client) Player(tag string) *PlayerInterface {
+	return &PlayerInterface{c, tag}
+}
+
+// Get list of reward chests that the player will receive next in the game.
+func (i *PlayerInterface) UpcomingChests() (UpcomingChests, error) {
+	url := fmt.Sprintf("/v1/players/%s/upcomingchests", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var chests UpcomingChests
 
 	if err == nil {
-		_, err = c.do(req, &chests)
+		_, err = i.c.do(req, &chests)
 	}
 
 	return chests, err
 }
 
-func (c *Client) GetPlayerBattleLog(hashtag string) (BattleLogEntries, error) {
-	url := fmt.Sprintf("/v1/players/%s/battlelog", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+// Get list of recent battle results for a player.
+func (i *PlayerInterface) BattleLog() (BattleLogEntries, error) {
+	url := fmt.Sprintf("/v1/players/%s/battlelog", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var list BattleLogEntries
 
 	if err == nil {
-		_, err = c.do(req, &list)
+		_, err = i.c.do(req, &list)
 	}
 
 	return list, err
 }
 
-func (c *Client) GetPlayer(hashtag string) (Player, error) {
-	url := fmt.Sprintf("/v1/players/%s", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+// Get information about a single player by player tag. Player tags
+// can be found either in game or by from clan member lists.
+func (i *PlayerInterface) Get() (Player, error) {
+	url := fmt.Sprintf("/v1/players/%s", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var player Player
 
 	if err == nil {
-		_, err = c.do(req, &player)
+		_, err = i.c.do(req, &player)
 	}
 
 	return player, err
 }
 
-func (c *Client) VerifyPlayerToken(hashtag string, token string) (VerificationResult, error) {
-	url := fmt.Sprintf("/v1/players/%s/verifytoken", normaliseHashtag(hashtag))
-	req, err := c.newRequest("POST", url, map[string]string{"token": token})
+// Verifies a player token and returns whether or not the token was associated with the given player.
+//
+// This API call can be used by a player to prove that they own a particular game account as the token
+// can only be retrieved inside the game from settings view.
+func (i *PlayerInterface) VerifyToken(token string) (VerificationResult, error) {
+	url := fmt.Sprintf("/v1/players/%s/verifytoken", normaliseTag(i.tag))
+	req, err := i.c.newRequest("POST", url, map[string]string{"token": token})
 	var result VerificationResult
 
 	if err == nil {
-		_, err = c.do(req, &result)
+		_, err = i.c.do(req, &result)
 	}
 
 	return result, err

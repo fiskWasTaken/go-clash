@@ -19,6 +19,7 @@ type Client struct {
 	httpClient http.Client
 }
 
+// The error response sent by the API if 4xx/5xx status code.
 type ErrorBody struct {
 	Reason  string `json:"reason"`
 	Message string `json:"message"`
@@ -77,14 +78,12 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 		if err == nil {
 			err = &APIError{resp, errorResponse}
 		}
-	} else {
-		err = json.NewDecoder(resp.Body).Decode(v)
 	}
 
 	return resp, err
 }
 
-func normaliseHashtag(hashtag string) string {
+func normaliseTag(hashtag string) string {
 	if hashtag[0] == '#' {
 		return hashtag
 	}

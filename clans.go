@@ -11,6 +11,9 @@ type ClanQuery struct {
 	MinMembers int
 	MaxMembers int
 	Name       string
+	Limit      int
+	After      int
+	Before     int
 }
 
 type Clan struct {
@@ -112,56 +115,79 @@ type ClanMember struct {
 	ClanChestPoints   int    `json:"clanChestPoints"`
 }
 
-func (c *Client) GetClan(hashtag string) (Clan, error) {
-	url := fmt.Sprintf("/v1/clans/%s", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+type ClansInterface struct {
+	c *Client
+}
+
+type ClanInterface struct {
+	c   *Client
+	tag string
+}
+
+func (c *Client) Clans() *ClansInterface {
+	return &ClansInterface{c}
+}
+
+func (c *Client) Clan(tag string) *ClanInterface {
+	return &ClanInterface{c, tag}
+}
+
+// Get information about a single clan by clan tag. Clan tags can be found using clan search operation.
+func (i *ClanInterface) Get() (Clan, error) {
+	url := fmt.Sprintf("/v1/clans/%s", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var clan Clan
 
 	if err == nil {
-		_, err = c.do(req, &clan)
+		_, err = i.c.do(req, &clan)
 	}
 
 	return clan, err
 }
 
-func (c *Client) GetClanCurrentWar(hashtag string) (ClanWar, error) {
-	url := fmt.Sprintf("/v1/clans/%s/currentwar", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+// Retrieve information about clan's current clan war
+func (i *ClanInterface) CurrentWar() (ClanWar, error) {
+	url := fmt.Sprintf("/v1/clans/%s/currentwar", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var war ClanWar
 
 	if err == nil {
-		_, err = c.do(req, &war)
+		_, err = i.c.do(req, &war)
 	}
 
 	return war, err
 }
 
-func (c *Client) GetClanWarLog(hashtag string) (WarLogPaging, error) {
-	url := fmt.Sprintf("/v1/clans/%s/warlog", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+// Retrieve clan's clan war log
+func (i *ClanInterface) WarLog() (WarLogPaging, error) {
+	url := fmt.Sprintf("/v1/clans/%s/warlog", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var warLog WarLogPaging
 
 	if err == nil {
-		_, err = c.do(req, &warLog)
+		_, err = i.c.do(req, &warLog)
 	}
 
 	return warLog, err
 }
 
-func (c *Client) GetClanMembers(hashtag string) (MemberPaging, error) {
-	url := fmt.Sprintf("/v1/clans/%s/members", normaliseHashtag(hashtag))
-	req, err := c.newRequest("GET", url, nil)
+// List clan members
+func (i *ClanInterface) Members() (MemberPaging, error) {
+	url := fmt.Sprintf("/v1/clans/%s/members", normaliseTag(i.tag))
+	req, err := i.c.newRequest("GET", url, nil)
 	var members MemberPaging
 
 	if err == nil {
-		_, err = c.do(req, &members)
+		_, err = i.c.do(req, &members)
 	}
 
 	return members, err
 }
 
-func (c *Client) SearchClans(query ClanQuery) (ClanPaging, error) {
-	req, err := c.newRequest("GET", "/v1/clans", nil)
+// Search all clans by name and/or filtering the results using various criteria.
+// At least one filtering criteria must be defined and if name is used as part of search, it is required to be at least three characters long.
+func (i *ClanInterface) Search(query ClanQuery) (ClanPaging, error) {
+	req, err := i.c.newRequest("GET", "/v1/clans", nil)
 	q := req.URL.Query()
 
 	if query.LocationId > 0 {
@@ -180,8 +206,20 @@ func (c *Client) SearchClans(query ClanQuery) (ClanPaging, error) {
 		q.Add("maxMembers", fmt.Sprintf("%d", query.MaxMembers))
 	}
 
-	if len(query.Name) > 3 {
-		q.Add("name", fmt.Sprintf("%d", query.Name))
+	if len(query.Name) >= 3 {
+		q.Add("name", query.Name)
+	}
+
+	if query.Limit > 0 {
+		q.Add("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.After > 0 {
+		q.Add("after", fmt.Sprintf("%d", query.After))
+	}
+
+	if query.Before > 0 {
+		q.Add("before", fmt.Sprintf("%d", query.Before))
 	}
 
 	req.URL.RawQuery = q.Encode()
@@ -189,7 +227,7 @@ func (c *Client) SearchClans(query ClanQuery) (ClanPaging, error) {
 	var clans ClanPaging
 
 	if err == nil {
-		_, err = c.do(req, &clans)
+		_, err = i.c.do(req, &clans)
 	}
 
 	return clans, err

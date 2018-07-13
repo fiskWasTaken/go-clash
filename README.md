@@ -13,10 +13,10 @@ client := clash.Client{
     UserAgent: "StatsRoyale",
 }
 
-chests, _ := client.GetPlayerUpcomingChests("9PLJLPQ8G")
+chests, _ := client.Player().UpcomingChests("9PLJLPQ8G") // "#9PLJLPQ8G" is also fine
 fmt.Println(chests)
 
-log, _ := client.GetPlayerBattleLog("9PLJLPQ8G")
+log, _ := client.Player().BattleLog("9PLJLPQ8G")
 fmt.Println(log)
 ```
 

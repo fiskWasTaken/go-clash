@@ -16,14 +16,21 @@ type Location struct {
 	CountryCode string `json:"countryCode,omitempty"`
 }
 
-type LocationRankingPager struct {
-	Items []LocationRanking `json:"items"`
+type LocationClanRankingPager struct {
+	Items []LocationClanRanking `json:"items"`
 	Paging struct {
 		Cursors struct{} `json:"cursors"`
 	} `json:"paging"`
 }
 
-type LocationRanking struct {
+type LocationPlayerRankingPager struct {
+	Items []LocationPlayerRanking `json:"items"`
+	Paging struct {
+		Cursors struct{} `json:"cursors"`
+	} `json:"paging"`
+}
+
+type LocationClanRanking struct {
 	Tag          string   `json:"tag"`
 	Name         string   `json:"name"`
 	Rank         int      `json:"rank"`
@@ -34,37 +41,81 @@ type LocationRanking struct {
 	Members      int      `json:"members"`
 }
 
-func (c *Client) GetLocations() (LocationPager, error) {
-	req, err := c.newRequest("GET", "/v1/locations", nil)
+type LocationPlayerRanking struct {
+	Tag          string     `json:"tag"`
+	Name         string     `json:"name"`
+	ExpLevel     int        `json:"expLevel"`
+	Trophies     int        `json:"trophies"`
+	Clan         PlayerClan `json:"clan"`
+	Rank         int        `json:"Rank"`
+	PreviousRank int        `json:"previousRank"`
+	Arena        Arena      `json:"arena"`
+}
+
+type LocationsInterface struct {
+	c *Client
+}
+
+type LocationInterface struct {
+	c *Client
+	id int
+}
+
+func (c *Client) Locations() *LocationsInterface {
+	return &LocationsInterface{c}
+}
+
+func (c *Client) Location(id int) *LocationInterface {
+	return &LocationInterface{c, id}
+}
+
+// List all available locations
+func (i *LocationsInterface) All() (LocationPager, error) {
+	req, err := i.c.newRequest("GET", "/v1/locations", nil)
 
 	var locations LocationPager
 
 	if err == nil {
-		_, err = c.do(req, &locations)
+		_, err = i.c.do(req, &locations)
 	}
 
 	return locations, err
 }
 
-func (c *Client) GetLocation(id int) (Location, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("/v1/locations/%d", id), nil)
+// Get information about specific location
+func (i *LocationInterface) Get() (Location, error) {
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d", i.id), nil)
 
 	var location Location
 
 	if err == nil {
-		_, err = c.do(req, &location)
+		_, err = i.c.do(req, &location)
 	}
 
 	return location, err
 }
 
-func (c *Client) GetLocationRankings(id int, rankingType string) (LocationRankingPager, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/%s", id, rankingType), nil)
+// Get clan rankings for a specific location
+func (i *LocationInterface) ClanRankings() (LocationClanRankingPager, error) {
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clans", i.id), nil)
 
-	var rankings LocationRankingPager
+	var rankings LocationClanRankingPager
 
 	if err == nil {
-		_, err = c.do(req, &rankings)
+		_, err = i.c.do(req, &rankings)
+	}
+
+	return rankings, err
+}
+
+// Get player rankings for a specific location
+func (i *LocationInterface) PlayerRankings(rankingType string) (LocationPlayerRankingPager, error) {
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/players", i.id), nil)
+
+	var rankings LocationPlayerRankingPager
+
+	if err == nil {
+		_, err = i.c.do(req, &rankings)
 	}
 
 	return rankings, err
