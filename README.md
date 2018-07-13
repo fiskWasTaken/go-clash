@@ -12,16 +12,15 @@ base, _ := url.Parse("Base URI")
 client := clash.Client{
     BaseURL:   base,
     Bearer:    "Your bearer key",
-    UserAgent: "StatsRoyale",
 }
 
 player := client.Player("9PLJLPQ8G") // "#9PLJLPQ8G" is also fine
 
 chests, _ := player.UpcomingChests()
-fmt.Println(chests)
 
-log, _ := player.BattleLog()
-fmt.Println(log)
+for _, chest := range chests.Items {
+    fmt.Printf("Chest %s is %d drops away!\n", chest.Name, chest.Index)
+}
 ```
 
 ## Error handling
