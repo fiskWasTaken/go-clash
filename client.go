@@ -19,6 +19,13 @@ type Client struct {
 	httpClient http.Client
 }
 
+// Base struct for paged queries.
+type PagedQuery struct {
+	Limit  int
+	After  int
+	Before int
+}
+
 // The error response sent by the API if 4xx/5xx status code.
 type ErrorBody struct {
 	Reason  string `json:"reason"`
@@ -28,6 +35,14 @@ type ErrorBody struct {
 type APIError struct {
 	Response *http.Response
 	Body     *ErrorBody
+}
+
+// Paging for pager responses. 'before' and 'after' may be empty if there are no more results to return.
+type Paging struct {
+	Cursors struct {
+		Before string `json:"before"`
+		After  string `json:"after"`
+	} `json:"cursors"`
 }
 
 func (e *APIError) Error() string {

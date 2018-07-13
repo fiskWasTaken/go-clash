@@ -3,10 +3,8 @@ package clash
 import "fmt"
 
 type LocationPager struct {
-	Items []Location `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []Location `json:"items"`
+	Paging Paging     `json:"paging"`
 }
 
 type Location struct {
@@ -17,17 +15,13 @@ type Location struct {
 }
 
 type LocationClanRankingPager struct {
-	Items []LocationClanRanking `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []LocationClanRanking `json:"items"`
+	Paging Paging                `json:"paging"`
 }
 
 type LocationPlayerRankingPager struct {
-	Items []LocationPlayerRanking `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []LocationPlayerRanking `json:"items"`
+	Paging Paging                  `json:"paging"`
 }
 
 type LocationClanRanking struct {
@@ -57,7 +51,7 @@ type LocationsInterface struct {
 }
 
 type LocationInterface struct {
-	c *Client
+	c  *Client
 	id int
 }
 
@@ -96,8 +90,24 @@ func (i *LocationInterface) Get() (Location, error) {
 }
 
 // Get clan rankings for a specific location
-func (i *LocationInterface) ClanRankings() (LocationClanRankingPager, error) {
+func (i *LocationInterface) ClanRankings(query *PagedQuery) (LocationClanRankingPager, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clans", i.id), nil)
+
+	q := req.URL.Query()
+
+	if query.Limit > 0 {
+		q.Add("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.After > 0 {
+		q.Add("after", fmt.Sprintf("%d", query.After))
+	}
+
+	if query.Before > 0 {
+		q.Add("before", fmt.Sprintf("%d", query.Before))
+	}
+
+	req.URL.RawQuery = q.Encode()
 
 	var rankings LocationClanRankingPager
 
@@ -109,10 +119,55 @@ func (i *LocationInterface) ClanRankings() (LocationClanRankingPager, error) {
 }
 
 // Get player rankings for a specific location
-func (i *LocationInterface) PlayerRankings(rankingType string) (LocationPlayerRankingPager, error) {
+func (i *LocationInterface) PlayerRankings(query *PagedQuery) (LocationPlayerRankingPager, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/players", i.id), nil)
 
+	q := req.URL.Query()
+
+	if query.Limit > 0 {
+		q.Add("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.After > 0 {
+		q.Add("after", fmt.Sprintf("%d", query.After))
+	}
+
+	if query.Before > 0 {
+		q.Add("before", fmt.Sprintf("%d", query.Before))
+	}
+
+	req.URL.RawQuery = q.Encode()
+
 	var rankings LocationPlayerRankingPager
+
+	if err == nil {
+		_, err = i.c.do(req, &rankings)
+	}
+
+	return rankings, err
+}
+
+// Get clan war rankings for a specific location
+func (i *LocationInterface) ClanWarRankings(query *PagedQuery) (LocationClanRankingPager, error) {
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clanwars", i.id), nil)
+
+	q := req.URL.Query()
+
+	if query.Limit > 0 {
+		q.Add("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.After > 0 {
+		q.Add("after", fmt.Sprintf("%d", query.After))
+	}
+
+	if query.Before > 0 {
+		q.Add("before", fmt.Sprintf("%d", query.Before))
+	}
+
+	req.URL.RawQuery = q.Encode()
+
+	var rankings LocationClanRankingPager
 
 	if err == nil {
 		_, err = i.c.do(req, &rankings)

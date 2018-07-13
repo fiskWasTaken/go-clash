@@ -6,10 +6,8 @@ import (
 )
 
 type TournamentQuery struct {
-	Name       string
-	Limit      int
-	After      int
-	Before     int
+	PagedQuery
+	Name string
 }
 
 type TournamentMember struct {
@@ -45,14 +43,12 @@ func (t *Tournament) ParseStartedTime() (time.Time, error) {
 }
 
 type TournamentPaging struct {
-	Items []Tournament `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []Tournament `json:"items"`
+	Paging Paging       `json:"paging"`
 }
 
 type TournamentInterface struct {
-	c *Client
+	c   *Client
 	tag string
 }
 

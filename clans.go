@@ -6,14 +6,12 @@ import (
 )
 
 type ClanQuery struct {
+	PagedQuery
 	LocationId int
 	MinScore   int
 	MinMembers int
 	MaxMembers int
 	Name       string
-	Limit      int
-	After      int
-	Before     int
 }
 
 type Clan struct {
@@ -35,17 +33,13 @@ type Clan struct {
 }
 
 type ClanPaging struct {
-	Items []Clan `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []Clan `json:"items"`
+	Paging Paging `json:"paging"`
 }
 
 type MemberPaging struct {
-	Items []ClanMember `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []ClanMember `json:"items"`
+	Paging Paging       `json:"paging"`
 }
 
 type ClanWarParticipant struct {
@@ -84,10 +78,8 @@ func (w *WarLogEntry) ParseCreatedDate() (time.Time, error) {
 }
 
 type WarLogPaging struct {
-	Items []WarLogEntry `json:"items"`
-	Paging struct {
-		Cursors struct{} `json:"cursors"`
-	} `json:"paging"`
+	Items  []WarLogEntry `json:"items"`
+	Paging Paging        `json:"paging"`
 }
 
 type ClanWar struct {
@@ -132,7 +124,8 @@ func (c *Client) Clan(tag string) *ClanInterface {
 	return &ClanInterface{c, tag}
 }
 
-// Get information about a single clan by clan tag. Clan tags can be found using clan search operation.
+// Get information about a single clan by clan tag.
+// Clan tags can be found using clan search operation.
 func (i *ClanInterface) Get() (Clan, error) {
 	url := fmt.Sprintf("/v1/clans/%s", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
@@ -185,7 +178,8 @@ func (i *ClanInterface) Members() (MemberPaging, error) {
 }
 
 // Search all clans by name and/or filtering the results using various criteria.
-// At least one filtering criteria must be defined and if name is used as part of search, it is required to be at least three characters long.
+// At least one filtering criteria must be defined and if name is used
+// as part of search, it is required to be at least three characters long.
 func (i *ClansInterface) Search(query *ClanQuery) (ClanPaging, error) {
 	req, err := i.c.newRequest("GET", "/v1/clans", nil)
 	q := req.URL.Query()
