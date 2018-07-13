@@ -2,8 +2,6 @@
 
 API bindings for the public Clash Royale API, for Go.
 
-Provides a fluent API
-
 https://developer.clashroyale.com/#/documentation
 
 ## Usage
