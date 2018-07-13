@@ -186,7 +186,7 @@ func (i *ClanInterface) Members() (MemberPaging, error) {
 
 // Search all clans by name and/or filtering the results using various criteria.
 // At least one filtering criteria must be defined and if name is used as part of search, it is required to be at least three characters long.
-func (i *ClanInterface) Search(query ClanQuery) (ClanPaging, error) {
+func (i *ClansInterface) Search(query *ClanQuery) (ClanPaging, error) {
 	req, err := i.c.newRequest("GET", "/v1/clans", nil)
 	q := req.URL.Query()
 

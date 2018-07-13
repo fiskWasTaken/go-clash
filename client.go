@@ -78,6 +78,8 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 		if err == nil {
 			err = &APIError{resp, errorResponse}
 		}
+	} else {
+		err = json.NewDecoder(resp.Body).Decode(v)
 	}
 
 	return resp, err

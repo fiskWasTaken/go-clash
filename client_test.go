@@ -3,8 +3,8 @@ package clash_test
 import (
 	"testing"
 	"time"
-	"github.com/overwolfmobile/go-clash"
 	"github.com/stretchr/testify/assert"
+	"github.com/fiskie/go-clash"
 )
 
 // test that our time layout is right, since we use this to convert time values to an object.

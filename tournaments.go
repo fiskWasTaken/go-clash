@@ -5,6 +5,13 @@ import (
 	"time"
 )
 
+type TournamentQuery struct {
+	Name       string
+	Limit      int
+	After      int
+	Before     int
+}
+
 type TournamentMember struct {
 	Tag   string     `json:"tag"`
 	Name  string     `json:"name"`
@@ -78,10 +85,24 @@ func (i *TournamentInterface) Get() (Tournament, error) {
 //
 // It is not possible to specify ordering for results so clients should not
 // rely on any specific ordering as that may change in the future releases of the API.
-func (i *TournamentsInterface) Search(name string) (TournamentPaging, error) {
+func (i *TournamentsInterface) Search(query *TournamentQuery) (TournamentPaging, error) {
 	req, err := i.c.newRequest("GET", "/v1/tournaments", nil)
 	q := req.URL.Query()
-	q.Add("name", name)
+
+	q.Add("name", query.Name)
+
+	if query.Limit > 0 {
+		q.Add("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.After > 0 {
+		q.Add("after", fmt.Sprintf("%d", query.After))
+	}
+
+	if query.Before > 0 {
+		q.Add("before", fmt.Sprintf("%d", query.Before))
+	}
+
 	req.URL.RawQuery = q.Encode()
 
 	var tournaments TournamentPaging
