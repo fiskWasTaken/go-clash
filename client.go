@@ -83,10 +83,11 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	return resp, err
 }
 
-func normaliseTag(hashtag string) string {
-	if hashtag[0] == '#' {
-		return hashtag
+// make sure the tag is prefixed with a # if it doesn't have one
+func normaliseTag(tag string) string {
+	if len(tag) > 0 && tag[0] == '#' {
+		return tag
 	}
 
-	return "#" + hashtag
+	return "#" + tag
 }
