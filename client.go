@@ -55,7 +55,7 @@ func NewClient(token string) *Client {
 }
 
 func (e *APIError) Error() string {
-	return fmt.Sprintf("[%d] %s", e.Response.StatusCode, e.Body.Message)
+	return fmt.Sprintf("[%d] %s: %s", e.Response.StatusCode, e.Body.Reason, e.Body.Message)
 }
 
 func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
