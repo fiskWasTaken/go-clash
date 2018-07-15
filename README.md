@@ -7,12 +7,7 @@ https://developer.clashroyale.com/#/documentation
 ## Usage
 
 ```
-base, _ := url.Parse("Base URI")
-
-client := clash.Client{
-    BaseURL:   base,
-    Bearer:    "Your bearer key",
-}
+client := clash.NewClient("Your bearer token"),
 
 player := client.Player("9PLJLPQ8G") // "#9PLJLPQ8G" is also fine
 

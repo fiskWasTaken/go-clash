@@ -45,6 +45,15 @@ type Paging struct {
 	} `json:"cursors"`
 }
 
+func NewClient(token string) *Client {
+	base, _ := url.Parse("https://api.clashroyale.com")
+
+	return &Client{
+		Bearer: token,
+		BaseURL: base,
+	}
+}
+
 func (e *APIError) Error() string {
 	return fmt.Sprintf("[%d] %s", e.Response.StatusCode, e.Body.Message)
 }
