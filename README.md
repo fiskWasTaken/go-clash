@@ -4,6 +4,9 @@ API bindings for the public Clash Royale API, for Go.
 
 https://developer.clashroyale.com/#/documentation
 
+These bindings provide `time.Time` castings for the (non-standard) datestamps. Such properties are still accessible as strings,
+though you are more likely to appreciate the helper methods that parse these timestamps into date values.
+
 ## Usage
 
 ```

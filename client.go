@@ -49,7 +49,7 @@ func NewClient(token string) *Client {
 	base, _ := url.Parse("https://api.clashroyale.com")
 
 	return &Client{
-		Bearer: token,
+		Bearer:  token,
 		BaseURL: base,
 	}
 }

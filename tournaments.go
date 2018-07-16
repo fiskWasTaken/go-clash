@@ -29,17 +29,19 @@ type Tournament struct {
 	MaxCapacity         int                `json:"maxCapacity"`
 	PreparationDuration int                `json:"preparationDuration"`
 	Duration            int                `json:"duration"`
-	CreatedTime         string             `json:"createdTime"`
-	StartedTime         string             `json:"startedTime"`
+	RawCreatedTime      string             `json:"createdTime"`
+	RawStartedTime      string             `json:"startedTime"`
 	MembersList         []TournamentMember `json:"membersList"`
 }
 
-func (t *Tournament) ParseCreatedTime() (time.Time, error) {
-	return time.Parse(TimeLayout, t.CreatedTime)
+func (t *Tournament) CreatedTime() time.Time {
+	parsed, _ := time.Parse(TimeLayout, t.RawCreatedTime)
+	return parsed
 }
 
-func (t *Tournament) ParseStartedTime() (time.Time, error) {
-	return time.Parse(TimeLayout, t.StartedTime)
+func (t *Tournament) StartedTime() time.Time {
+	parsed, _ := time.Parse(TimeLayout, t.RawStartedTime)
+	return parsed
 }
 
 type TournamentPaging struct {

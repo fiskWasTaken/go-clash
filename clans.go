@@ -67,14 +67,15 @@ type WarLogStanding struct {
 }
 
 type WarLogEntry struct {
-	SeasonId     int                  `json:"seasonId"`
-	CreatedDate  string               `json:"createdDate"`
-	Participants []ClanWarParticipant `json:"participants"`
-	Standings    []WarLogStanding     `json:"standings"`
+	SeasonId       int                  `json:"seasonId"`
+	RawCreatedDate string               `json:"createdDate"`
+	Participants   []ClanWarParticipant `json:"participants"`
+	Standings      []WarLogStanding     `json:"standings"`
 }
 
-func (w *WarLogEntry) ParseCreatedDate() (time.Time, error) {
-	return time.Parse(TimeLayout, w.CreatedDate)
+func (w *WarLogEntry) CreatedDate() time.Time {
+	parsed, _ := time.Parse(TimeLayout, w.RawCreatedDate)
+	return parsed
 }
 
 type WarLogPaging struct {
@@ -83,14 +84,15 @@ type WarLogPaging struct {
 }
 
 type ClanWar struct {
-	State             string               `json:"state"`
-	CollectionEndTime string               `json:"collectionEndTime"`
-	Clan              ClanWarStanding      `json:"clan"`
-	Participants      []ClanWarParticipant `json:"participants"`
+	State                string               `json:"state"`
+	RawCollectionEndTime string               `json:"collectionEndTime"`
+	Clan                 ClanWarStanding      `json:"clan"`
+	Participants         []ClanWarParticipant `json:"participants"`
 }
 
-func (w *ClanWar) ParseCollectionEndTime() (time.Time, error) {
-	return time.Parse(TimeLayout, w.CollectionEndTime)
+func (w *ClanWar) CollectionEndTime() time.Time {
+	parsed, _ := time.Parse(TimeLayout, w.RawCollectionEndTime)
+	return parsed
 }
 
 type ClanMember struct {

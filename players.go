@@ -116,7 +116,7 @@ type BattleLogPlayer struct {
 
 type BattleLogEntry struct {
 	Type          string            `json:"type"`
-	BattleTime    string            `json:"battleTime"`
+	RawBattleTime string            `json:"battleTime"`
 	Arena         Arena             `json:"arena"`
 	GameMode      GameMode          `json:"gameMode"`
 	DeckSelection string            `json:"deckSelection"`
@@ -124,8 +124,9 @@ type BattleLogEntry struct {
 	Opponent      []BattleLogPlayer `json:"opponent"`
 }
 
-func (b *BattleLogEntry) ParseBattleTime() (time.Time, error) {
-	return time.Parse(TimeLayout, b.BattleTime)
+func (b *BattleLogEntry) BattleTime() time.Time {
+	parsed, _ := time.Parse(TimeLayout, b.RawBattleTime)
+	return parsed
 }
 
 type BattleLogEntries []BattleLogEntry
