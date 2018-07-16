@@ -2,6 +2,7 @@ package clash
 
 import (
 	"fmt"
+	"time"
 )
 
 type Card struct {
@@ -121,6 +122,10 @@ type BattleLogEntry struct {
 	DeckSelection string            `json:"deckSelection"`
 	Team          []BattleLogPlayer `json:"team"`
 	Opponent      []BattleLogPlayer `json:"opponent"`
+}
+
+func (b *BattleLogEntry) ParseBattleTime() (time.Time, error) {
+	return time.Parse(TimeLayout, b.BattleTime)
 }
 
 type BattleLogEntries []BattleLogEntry
