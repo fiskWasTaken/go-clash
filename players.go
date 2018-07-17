@@ -122,6 +122,7 @@ type BattleLogEntry struct {
 	DeckSelection string            `json:"deckSelection"`
 	Team          []BattleLogPlayer `json:"team"`
 	Opponent      []BattleLogPlayer `json:"opponent"`
+	TournamentTag string            `json:"tournamentTag"`
 }
 
 func (b *BattleLogEntry) BattleTime() time.Time {
