@@ -32,17 +32,17 @@ type Clan struct {
 	MemberList        []ClanMember `json:"memberList"`
 }
 
-type ClanPaging struct {
+type ClanPager struct {
 	Items  []Clan `json:"items"`
 	Paging Paging `json:"paging"`
 }
 
-type MemberPaging struct {
+type MemberPager struct {
 	Items  []ClanMember `json:"items"`
 	Paging Paging       `json:"paging"`
 }
 
-type ClanWarParticipant struct {
+type WarParticipant struct {
 	Tag           string `json:"tag"`
 	Name          string `json:"name"`
 	CardsEarned   int    `json:"cardsEarned"`
@@ -50,7 +50,7 @@ type ClanWarParticipant struct {
 	Wins          int    `json:"wins"`
 }
 
-type ClanWarStanding struct {
+type WarClanDetails struct {
 	Tag           string `json:"tag"`
 	Name          string `json:"name"`
 	BadgeId       int    `json:"badgeId"`
@@ -61,36 +61,36 @@ type ClanWarStanding struct {
 	Crowns        int    `json:"crowns"`
 }
 
-type WarLogStanding struct {
-	Clan         ClanWarStanding `json:"clan"`
-	TrophyChange int             `json:"trophyChange"`
+type WarStanding struct {
+	Clan         WarClanDetails `json:"clan"`
+	TrophyChange int            `json:"trophyChange"`
 }
 
-type WarLogEntry struct {
-	SeasonId       int                  `json:"seasonId"`
-	RawCreatedDate string               `json:"createdDate"`
-	Participants   []ClanWarParticipant `json:"participants"`
-	Standings      []WarLogStanding     `json:"standings"`
+type War struct {
+	SeasonId       int              `json:"seasonId"`
+	RawCreatedDate string           `json:"createdDate"`
+	Participants   []WarParticipant `json:"participants"`
+	Standings      []WarStanding    `json:"standings"`
 }
 
-func (w *WarLogEntry) CreatedDate() time.Time {
+func (w *War) CreatedDate() time.Time {
 	parsed, _ := time.Parse(TimeLayout, w.RawCreatedDate)
 	return parsed
 }
 
-type WarLogPaging struct {
-	Items  []WarLogEntry `json:"items"`
-	Paging Paging        `json:"paging"`
+type WarLogPager struct {
+	Items  []War  `json:"items"`
+	Paging Paging `json:"paging"`
 }
 
-type ClanWar struct {
-	State                string               `json:"state"`
-	RawCollectionEndTime string               `json:"collectionEndTime"`
-	Clan                 ClanWarStanding      `json:"clan"`
-	Participants         []ClanWarParticipant `json:"participants"`
+type CurrentWar struct {
+	State                string           `json:"state"`
+	RawCollectionEndTime string           `json:"collectionEndTime"`
+	Clan                 WarClanDetails   `json:"clan"`
+	Participants         []WarParticipant `json:"participants"`
 }
 
-func (w *ClanWar) CollectionEndTime() time.Time {
+func (w *CurrentWar) CollectionEndTime() time.Time {
 	parsed, _ := time.Parse(TimeLayout, w.RawCollectionEndTime)
 	return parsed
 }
@@ -109,26 +109,26 @@ type ClanMember struct {
 	ClanChestPoints   int    `json:"clanChestPoints"`
 }
 
-type ClansInterface struct {
+type ClansService struct {
 	c *Client
 }
 
-type ClanInterface struct {
+type ClanService struct {
 	c   *Client
 	tag string
 }
 
-func (c *Client) Clans() *ClansInterface {
-	return &ClansInterface{c}
+func (c *Client) Clans() *ClansService {
+	return &ClansService{c}
 }
 
-func (c *Client) Clan(tag string) *ClanInterface {
-	return &ClanInterface{c, tag}
+func (c *Client) Clan(tag string) *ClanService {
+	return &ClanService{c, tag}
 }
 
 // Get information about a single clan by clan tag.
 // Clan tags can be found using clan search operation.
-func (i *ClanInterface) Get() (Clan, error) {
+func (i *ClanService) Get() (Clan, error) {
 	url := fmt.Sprintf("/v1/clans/%s", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
 	var clan Clan
@@ -141,10 +141,10 @@ func (i *ClanInterface) Get() (Clan, error) {
 }
 
 // Retrieve information about clan's current clan war
-func (i *ClanInterface) CurrentWar() (ClanWar, error) {
+func (i *ClanService) CurrentWar() (CurrentWar, error) {
 	url := fmt.Sprintf("/v1/clans/%s/currentwar", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
-	var war ClanWar
+	var war CurrentWar
 
 	if err == nil {
 		_, err = i.c.do(req, &war)
@@ -154,10 +154,10 @@ func (i *ClanInterface) CurrentWar() (ClanWar, error) {
 }
 
 // Retrieve clan's clan war log
-func (i *ClanInterface) WarLog() (WarLogPaging, error) {
+func (i *ClanService) WarLog() (WarLogPager, error) {
 	url := fmt.Sprintf("/v1/clans/%s/warlog", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
-	var warLog WarLogPaging
+	var warLog WarLogPager
 
 	if err == nil {
 		_, err = i.c.do(req, &warLog)
@@ -167,10 +167,10 @@ func (i *ClanInterface) WarLog() (WarLogPaging, error) {
 }
 
 // List clan members
-func (i *ClanInterface) Members() (MemberPaging, error) {
+func (i *ClanService) Members() (MemberPager, error) {
 	url := fmt.Sprintf("/v1/clans/%s/members", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
-	var members MemberPaging
+	var members MemberPager
 
 	if err == nil {
 		_, err = i.c.do(req, &members)
@@ -182,7 +182,7 @@ func (i *ClanInterface) Members() (MemberPaging, error) {
 // Search all clans by name and/or filtering the results using various criteria.
 // At least one filtering criteria must be defined and if name is used
 // as part of search, it is required to be at least three characters long.
-func (i *ClansInterface) Search(query *ClanQuery) (ClanPaging, error) {
+func (i *ClansService) Search(query *ClanQuery) (ClanPager, error) {
 	req, err := i.c.newRequest("GET", "/v1/clans", nil)
 	q := req.URL.Query()
 
@@ -220,7 +220,7 @@ func (i *ClansInterface) Search(query *ClanQuery) (ClanPaging, error) {
 
 	req.URL.RawQuery = q.Encode()
 
-	var clans ClanPaging
+	var clans ClanPager
 
 	if err == nil {
 		_, err = i.c.do(req, &clans)

@@ -6,21 +6,21 @@ import (
 )
 
 type Card struct {
-	Name     string       `json:"name"`
-	Level    int          `json:"level"`
-	MaxLevel int          `json:"maxLevel"`
-	Count    int          `json:"count"`
-	IconUrls CardIconUrls `json:"iconUrls"`
+	Name     string   `json:"name"`
+	Level    int      `json:"level"`
+	MaxLevel int      `json:"maxLevel"`
+	Count    int      `json:"count"`
+	IconUrls IconUrls `json:"iconUrls"`
 }
 
 type FavouriteCard struct {
-	Name     string       `json:"name"`
-	ID       int          `json:"id"`
-	MaxLevel int          `json:"maxLevel"`
-	IconUrls CardIconUrls `json:"iconUrls"`
+	Name     string   `json:"name"`
+	ID       int      `json:"id"`
+	MaxLevel int      `json:"maxLevel"`
+	IconUrls IconUrls `json:"iconUrls"`
 }
 
-type CardIconUrls struct {
+type IconUrls struct {
 	Medium string `json:"medium"`
 }
 
@@ -50,19 +50,19 @@ type Season struct {
 	ID           string `json:"id"`
 }
 
-type LeagueStatistics struct {
+type LeagueStats struct {
 	BestSeason     Season `json:"bestSeason"`
 	PreviousSeason Season `json:"previousSeason"`
 	CurrentSeason  Season `json:"currentSeason"`
 }
 
 type Player struct {
-	Tag                   string           `json:"tag"`
-	Name                  string           `json:"name"`
-	ExpLevel              int              `json:"expLevel"`
-	Trophies              int              `json:"trophies"`
-	BestTrophies          int              `json:"bestTrophies"`
-	Wins                  int              `json:"wins"`
+	Tag                  string        `json:"tag"`
+	Name                 string        `json:"name"`
+	ExpLevel             int           `json:"expLevel"`
+	Trophies             int           `json:"trophies"`
+	BestTrophies         int           `json:"bestTrophies"`
+	Wins                 int           `json:"wins"`
 	Losses                int              `json:"losses"`
 	BattleCount           int              `json:"battleCount"`
 	ThreeCrownWins        int              `json:"threeCrownWins"`
@@ -74,15 +74,15 @@ type Player struct {
 	Donations             int              `json:"donations"`
 	DonationsReceived     int              `json:"donationsReceived"`
 	TotalDonations        int              `json:"totalDonations"`
-	WarDayWins            int              `json:"warDayWins"`
-	ClanCardsCollected    int              `json:"clanCardsCollected"`
-	Clan                  PlayerClan       `json:"clan"`
-	Arena                 Arena            `json:"arena"`
-	Achievements          []Achievement    `json:"achievements"`
-	Cards                 []Card           `json:"cards"`
-	CurrentDeck           []Card           `json:"currentDeck"`
-	CurrentFavouriteCard  FavouriteCard    `json:"currentFavouriteCard"`
-	LeagueStatistics      LeagueStatistics `json:"leagueStatistics"`
+	WarDayWins           int           `json:"warDayWins"`
+	ClanCardsCollected   int           `json:"clanCardsCollected"`
+	Clan                 PlayerClan    `json:"clan"`
+	Arena                Arena         `json:"arena"`
+	Achievements         []Achievement `json:"achievements"`
+	Cards                []Card        `json:"cards"`
+	CurrentDeck          []Card        `json:"currentDeck"`
+	CurrentFavouriteCard FavouriteCard `json:"currentFavouriteCard"`
+	LeagueStatistics     LeagueStats   `json:"leagueStatistics"`
 }
 
 type VerificationResult struct {
@@ -100,7 +100,7 @@ type GameMode struct {
 	Name string `json:"name"`
 }
 
-type BattleLogPlayer struct {
+type BattlePlayer struct {
 	Tag              string `json:"tag"`
 	Name             string `json:"name"`
 	StartingTrophies int    `json:"startingTrophies"`
@@ -114,23 +114,23 @@ type BattleLogPlayer struct {
 	Cards []Card `json:"cards"`
 }
 
-type BattleLogEntry struct {
-	Type          string            `json:"type"`
-	RawBattleTime string            `json:"battleTime"`
-	Arena         Arena             `json:"arena"`
-	GameMode      GameMode          `json:"gameMode"`
-	DeckSelection string            `json:"deckSelection"`
-	Team          []BattleLogPlayer `json:"team"`
-	Opponent      []BattleLogPlayer `json:"opponent"`
-	TournamentTag string            `json:"tournamentTag"`
+type Battle struct {
+	Type          string         `json:"type"`
+	RawBattleTime string         `json:"battleTime"`
+	Arena         Arena          `json:"arena"`
+	GameMode      GameMode       `json:"gameMode"`
+	DeckSelection string         `json:"deckSelection"`
+	Team          []BattlePlayer `json:"team"`
+	Opponent      []BattlePlayer `json:"opponent"`
+	TournamentTag string         `json:"tournamentTag"`
 }
 
-func (b *BattleLogEntry) BattleTime() time.Time {
+func (b *Battle) BattleTime() time.Time {
 	parsed, _ := time.Parse(TimeLayout, b.RawBattleTime)
 	return parsed
 }
 
-type BattleLogEntries []BattleLogEntry
+type Battles []Battle
 
 type UpcomingChest struct {
 	Index int    `json:"index"`
@@ -141,17 +141,17 @@ type UpcomingChests struct {
 	Items []UpcomingChest `json:"items"`
 }
 
-type PlayerInterface struct {
+type PlayerService struct {
 	c   *Client
 	tag string
 }
 
-func (c *Client) Player(tag string) *PlayerInterface {
-	return &PlayerInterface{c, tag}
+func (c *Client) Player(tag string) *PlayerService {
+	return &PlayerService{c, tag}
 }
 
 // Get list of reward chests that the player will receive next in the game.
-func (i *PlayerInterface) UpcomingChests() (UpcomingChests, error) {
+func (i *PlayerService) UpcomingChests() (UpcomingChests, error) {
 	url := fmt.Sprintf("/v1/players/%s/upcomingchests", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
 	var chests UpcomingChests
@@ -164,10 +164,10 @@ func (i *PlayerInterface) UpcomingChests() (UpcomingChests, error) {
 }
 
 // Get list of recent battle results for a player.
-func (i *PlayerInterface) BattleLog() (BattleLogEntries, error) {
+func (i *PlayerService) BattleLog() (Battles, error) {
 	url := fmt.Sprintf("/v1/players/%s/battlelog", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
-	var list BattleLogEntries
+	var list Battles
 
 	if err == nil {
 		_, err = i.c.do(req, &list)
@@ -178,7 +178,7 @@ func (i *PlayerInterface) BattleLog() (BattleLogEntries, error) {
 
 // Get information about a single player by player tag. Player tags
 // can be found either in game or by from clan member lists.
-func (i *PlayerInterface) Get() (Player, error) {
+func (i *PlayerService) Get() (Player, error) {
 	url := fmt.Sprintf("/v1/players/%s", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
 	var player Player
@@ -194,7 +194,7 @@ func (i *PlayerInterface) Get() (Player, error) {
 //
 // This API call can be used by a player to prove that they own a particular game account as the token
 // can only be retrieved inside the game from settings view.
-func (i *PlayerInterface) VerifyToken(token string) (VerificationResult, error) {
+func (i *PlayerService) VerifyToken(token string) (VerificationResult, error) {
 	url := fmt.Sprintf("/v1/players/%s/verifytoken", normaliseTag(i.tag))
 	req, err := i.c.newRequest("POST", url, map[string]string{"token": token})
 	var result VerificationResult

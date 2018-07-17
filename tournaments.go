@@ -44,30 +44,30 @@ func (t *Tournament) StartedTime() time.Time {
 	return parsed
 }
 
-type TournamentPaging struct {
+type TournamentPager struct {
 	Items  []Tournament `json:"items"`
 	Paging Paging       `json:"paging"`
 }
 
-type TournamentInterface struct {
+type TournamentService struct {
 	c   *Client
 	tag string
 }
 
-type TournamentsInterface struct {
+type TournamentsService struct {
 	c *Client
 }
 
-func (c *Client) Tournaments() *TournamentsInterface {
-	return &TournamentsInterface{c}
+func (c *Client) Tournaments() *TournamentsService {
+	return &TournamentsService{c}
 }
 
-func (c *Client) Tournament(tag string) *TournamentInterface {
-	return &TournamentInterface{c, tag}
+func (c *Client) Tournament(tag string) *TournamentService {
+	return &TournamentService{c, tag}
 }
 
 // Get information about a single tournament by a tournament tag.
-func (i *TournamentInterface) Get() (Tournament, error) {
+func (i *TournamentService) Get() (Tournament, error) {
 	url := fmt.Sprintf("/v1/tournaments/%s", normaliseTag(i.tag))
 	req, err := i.c.newRequest("GET", url, nil)
 	var tournament Tournament
@@ -83,7 +83,7 @@ func (i *TournamentInterface) Get() (Tournament, error) {
 //
 // It is not possible to specify ordering for results so clients should not
 // rely on any specific ordering as that may change in the future releases of the API.
-func (i *TournamentsInterface) Search(query *TournamentQuery) (TournamentPaging, error) {
+func (i *TournamentsService) Search(query *TournamentQuery) (TournamentPager, error) {
 	req, err := i.c.newRequest("GET", "/v1/tournaments", nil)
 	q := req.URL.Query()
 
@@ -103,7 +103,7 @@ func (i *TournamentsInterface) Search(query *TournamentQuery) (TournamentPaging,
 
 	req.URL.RawQuery = q.Encode()
 
-	var tournaments TournamentPaging
+	var tournaments TournamentPager
 
 	if err == nil {
 		_, err = i.c.do(req, &tournaments)

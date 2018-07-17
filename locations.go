@@ -15,16 +15,16 @@ type Location struct {
 }
 
 type LocationClanRankingPager struct {
-	Items  []LocationClanRanking `json:"items"`
-	Paging Paging                `json:"paging"`
+	Items  []ClanRanking `json:"items"`
+	Paging Paging        `json:"paging"`
 }
 
 type LocationPlayerRankingPager struct {
-	Items  []LocationPlayerRanking `json:"items"`
-	Paging Paging                  `json:"paging"`
+	Items  []PlayerRanking `json:"items"`
+	Paging Paging          `json:"paging"`
 }
 
-type LocationClanRanking struct {
+type ClanRanking struct {
 	Tag          string   `json:"tag"`
 	Name         string   `json:"name"`
 	Rank         int      `json:"rank"`
@@ -35,7 +35,7 @@ type LocationClanRanking struct {
 	Members      int      `json:"members"`
 }
 
-type LocationPlayerRanking struct {
+type PlayerRanking struct {
 	Tag          string     `json:"tag"`
 	Name         string     `json:"name"`
 	ExpLevel     int        `json:"expLevel"`
@@ -46,25 +46,25 @@ type LocationPlayerRanking struct {
 	Arena        Arena      `json:"arena"`
 }
 
-type LocationsInterface struct {
+type LocationsService struct {
 	c *Client
 }
 
-type LocationInterface struct {
+type LocationService struct {
 	c  *Client
 	id int
 }
 
-func (c *Client) Locations() *LocationsInterface {
-	return &LocationsInterface{c}
+func (c *Client) Locations() *LocationsService {
+	return &LocationsService{c}
 }
 
-func (c *Client) Location(id int) *LocationInterface {
-	return &LocationInterface{c, id}
+func (c *Client) Location(id int) *LocationService {
+	return &LocationService{c, id}
 }
 
 // List all available locations
-func (i *LocationsInterface) All() (LocationPager, error) {
+func (i *LocationsService) All() (LocationPager, error) {
 	req, err := i.c.newRequest("GET", "/v1/locations", nil)
 
 	var locations LocationPager
@@ -77,7 +77,7 @@ func (i *LocationsInterface) All() (LocationPager, error) {
 }
 
 // Get information about specific location
-func (i *LocationInterface) Get() (Location, error) {
+func (i *LocationService) Get() (Location, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d", i.id), nil)
 
 	var location Location
@@ -90,7 +90,7 @@ func (i *LocationInterface) Get() (Location, error) {
 }
 
 // Get clan rankings for a specific location
-func (i *LocationInterface) ClanRankings(query *PagedQuery) (LocationClanRankingPager, error) {
+func (i *LocationService) ClanRankings(query *PagedQuery) (LocationClanRankingPager, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clans", i.id), nil)
 
 	q := req.URL.Query()
@@ -119,7 +119,7 @@ func (i *LocationInterface) ClanRankings(query *PagedQuery) (LocationClanRanking
 }
 
 // Get player rankings for a specific location
-func (i *LocationInterface) PlayerRankings(query *PagedQuery) (LocationPlayerRankingPager, error) {
+func (i *LocationService) PlayerRankings(query *PagedQuery) (LocationPlayerRankingPager, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/players", i.id), nil)
 
 	q := req.URL.Query()
@@ -148,7 +148,7 @@ func (i *LocationInterface) PlayerRankings(query *PagedQuery) (LocationPlayerRan
 }
 
 // Get clan war rankings for a specific location
-func (i *LocationInterface) ClanWarRankings(query *PagedQuery) (LocationClanRankingPager, error) {
+func (i *LocationService) ClanWarRankings(query *PagedQuery) (LocationClanRankingPager, error) {
 	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clanwars", i.id), nil)
 
 	q := req.URL.Query()
