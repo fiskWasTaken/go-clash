@@ -57,32 +57,32 @@ type LeagueStats struct {
 }
 
 type Player struct {
-	Tag                  string        `json:"tag"`
-	Name                 string        `json:"name"`
-	ExpLevel             int           `json:"expLevel"`
-	Trophies             int           `json:"trophies"`
-	BestTrophies         int           `json:"bestTrophies"`
-	Wins                 int           `json:"wins"`
-	Losses                int              `json:"losses"`
-	BattleCount           int              `json:"battleCount"`
-	ThreeCrownWins        int              `json:"threeCrownWins"`
-	ChallengeCardsWon     int              `json:"challengeCardsWon"`
-	ChallengeMaxWins      int              `json:"challengeMaxWins"`
-	TournamentCardsWon    int              `json:"tournamentCardsWon"`
-	TournamentBattleCount int              `json:"tournamentBattleCount"`
-	Role                  string           `json:"role"`
-	Donations             int              `json:"donations"`
-	DonationsReceived     int              `json:"donationsReceived"`
-	TotalDonations        int              `json:"totalDonations"`
-	WarDayWins           int           `json:"warDayWins"`
-	ClanCardsCollected   int           `json:"clanCardsCollected"`
-	Clan                 PlayerClan    `json:"clan"`
-	Arena                Arena         `json:"arena"`
-	Achievements         []Achievement `json:"achievements"`
-	Cards                []Card        `json:"cards"`
-	CurrentDeck          []Card        `json:"currentDeck"`
-	CurrentFavouriteCard FavouriteCard `json:"currentFavouriteCard"`
-	LeagueStatistics     LeagueStats   `json:"leagueStatistics"`
+	Tag                   string        `json:"tag"`
+	Name                  string        `json:"name"`
+	ExpLevel              int           `json:"expLevel"`
+	Trophies              int           `json:"trophies"`
+	BestTrophies          int           `json:"bestTrophies"`
+	Wins                  int           `json:"wins"`
+	Losses                int           `json:"losses"`
+	BattleCount           int           `json:"battleCount"`
+	ThreeCrownWins        int           `json:"threeCrownWins"`
+	ChallengeCardsWon     int           `json:"challengeCardsWon"`
+	ChallengeMaxWins      int           `json:"challengeMaxWins"`
+	TournamentCardsWon    int           `json:"tournamentCardsWon"`
+	TournamentBattleCount int           `json:"tournamentBattleCount"`
+	Role                  string        `json:"role"`
+	Donations             int           `json:"donations"`
+	DonationsReceived     int           `json:"donationsReceived"`
+	TotalDonations        int           `json:"totalDonations"`
+	WarDayWins            int           `json:"warDayWins"`
+	ClanCardsCollected    int           `json:"clanCardsCollected"`
+	Clan                  PlayerClan    `json:"clan"`
+	Arena                 Arena         `json:"arena"`
+	Achievements          []Achievement `json:"achievements"`
+	Cards                 []Card        `json:"cards"`
+	CurrentDeck           []Card        `json:"currentDeck"`
+	CurrentFavouriteCard  FavouriteCard `json:"currentFavouriteCard"`
+	LeagueStatistics      LeagueStats   `json:"leagueStatistics"`
 }
 
 type VerificationResult struct {
@@ -123,6 +123,7 @@ type Battle struct {
 	Team          []BattlePlayer `json:"team"`
 	Opponent      []BattlePlayer `json:"opponent"`
 	TournamentTag string         `json:"tournamentTag"`
+	ChallengeId   int            `json:"challengeId"`
 }
 
 func (b *Battle) BattleTime() time.Time {
