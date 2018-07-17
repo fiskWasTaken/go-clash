@@ -3,6 +3,7 @@ package clash
 import (
 	"fmt"
 	"time"
+	"errors"
 )
 
 type Card struct {
@@ -11,6 +12,11 @@ type Card struct {
 	MaxLevel int      `json:"maxLevel"`
 	Count    int      `json:"count"`
 	IconUrls IconUrls `json:"iconUrls"`
+}
+
+// Return the internal client level for the card, as these are zero-indexed
+func (c *Card) ClientLevel() int {
+	return c.Level - 1
 }
 
 type FavouriteCard struct {
@@ -115,17 +121,49 @@ type BattlePlayer struct {
 }
 
 type Battle struct {
-	Type          string         `json:"type"`
-	RawBattleTime string         `json:"battleTime"`
-	Arena         Arena          `json:"arena"`
-	GameMode      GameMode       `json:"gameMode"`
-	DeckSelection string         `json:"deckSelection"`
-	Team          []BattlePlayer `json:"team"`
-	Opponent      []BattlePlayer `json:"opponent"`
-	TournamentTag string         `json:"tournamentTag"`
-	ChallengeId   int            `json:"challengeId"`
+	Type                    string         `json:"type"`
+	RawBattleTime           string         `json:"battleTime"`
+	Arena                   Arena          `json:"arena"`
+	GameMode                GameMode       `json:"gameMode"`
+	DeckSelection           string         `json:"deckSelection"`
+	Team                    []BattlePlayer `json:"team"`
+	Opponent                []BattlePlayer `json:"opponent"`
+	TournamentTag           string         `json:"tournamentTag"`
+	ChallengeId             int            `json:"challengeId"`
+	ChallengeWinCountBefore int            `json:"challengeWinCountBefore"`
 }
 
+type BattleOutcome struct {
+	IsDraw  bool
+	Winners []BattlePlayer
+	Losers  []BattlePlayer
+}
+
+// Find a player in the battle by tag. Return an error if the tag could not be found.
+func (b *Battle) PlayerByTag(tag string) (BattlePlayer, error) {
+	tag = normaliseTag(tag)
+
+	for _, player := range append(b.Team, b.Opponent...) {
+		if player.Tag == tag {
+			return player, nil
+		}
+	}
+
+	return BattlePlayer{}, errors.New("player does not exist in battle")
+}
+
+// Get a struct describing the outcome of the battle.
+func (b *Battle) Outcome() BattleOutcome {
+	if b.Opponent[0].Crowns > b.Team[0].Crowns {
+		return BattleOutcome{Winners: b.Opponent, Losers: b.Team}
+	} else if b.Team[0].Crowns > b.Opponent[0].Crowns {
+		return BattleOutcome{Losers: b.Opponent, Winners: b.Team}
+	}
+
+	return BattleOutcome{IsDraw: true}
+}
+
+// Get the time of the battle.
 func (b *Battle) BattleTime() time.Time {
 	parsed, _ := time.Parse(TimeLayout, b.RawBattleTime)
 	return parsed
