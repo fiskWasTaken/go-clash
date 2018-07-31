@@ -52,14 +52,15 @@ type LocationsService struct {
 
 type LocationService struct {
 	c  *Client
-	id int
+	id string
 }
 
 func (c *Client) Locations() *LocationsService {
 	return &LocationsService{c}
 }
 
-func (c *Client) Location(id int) *LocationService {
+// NB: Location ID is a string. This is because 'global' is a valid location ID.
+func (c *Client) Location(id string) *LocationService {
 	return &LocationService{c, id}
 }
 
@@ -78,7 +79,7 @@ func (i *LocationsService) All() (LocationPager, error) {
 
 // Get information about specific location
 func (i *LocationService) Get() (Location, error) {
-	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d", i.id), nil)
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%s", i.id), nil)
 
 	var location Location
 
@@ -91,7 +92,7 @@ func (i *LocationService) Get() (Location, error) {
 
 // Get clan rankings for a specific location
 func (i *LocationService) ClanRankings(query *PagedQuery) (LocationClanRankingPager, error) {
-	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clans", i.id), nil)
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%s/rankings/clans", i.id), nil)
 
 	q := req.URL.Query()
 
@@ -120,7 +121,7 @@ func (i *LocationService) ClanRankings(query *PagedQuery) (LocationClanRankingPa
 
 // Get player rankings for a specific location
 func (i *LocationService) PlayerRankings(query *PagedQuery) (LocationPlayerRankingPager, error) {
-	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/players", i.id), nil)
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%s/rankings/players", i.id), nil)
 
 	q := req.URL.Query()
 
@@ -149,7 +150,7 @@ func (i *LocationService) PlayerRankings(query *PagedQuery) (LocationPlayerRanki
 
 // Get clan war rankings for a specific location
 func (i *LocationService) ClanWarRankings(query *PagedQuery) (LocationClanRankingPager, error) {
-	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%d/rankings/clanwars", i.id), nil)
+	req, err := i.c.newRequest("GET", fmt.Sprintf("/v1/locations/%s/rankings/clanwars", i.id), nil)
 
 	q := req.URL.Query()
 

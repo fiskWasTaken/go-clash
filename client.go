@@ -32,9 +32,14 @@ type ErrorBody struct {
 	Message string `json:"message"`
 }
 
+// APIError implements the error interface.
 type APIError struct {
 	Response *http.Response
 	Body     *ErrorBody
+}
+
+func (e *APIError) Error() string {
+	return fmt.Sprintf("[%d] %s: %s", e.Response.StatusCode, e.Body.Reason, e.Body.Message)
 }
 
 // Paging for pager responses. 'before' and 'after' may be empty if there are no more results to return.
@@ -54,10 +59,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (e *APIError) Error() string {
-	return fmt.Sprintf("[%d] %s: %s", e.Response.StatusCode, e.Body.Reason, e.Body.Message)
-}
-
+// make a new request object.
 func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
 	rel := &url.URL{Path: path}
 	u := c.BaseURL.ResolveReference(rel)
@@ -86,6 +88,7 @@ func (c *Client) newRequest(method, path string, body interface{}) (*http.Reques
 	return req, nil
 }
 
+// execute the request.
 func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.httpClient.Do(req)
 
