@@ -194,11 +194,13 @@ func (i *ClansService) Search(query *ClanQuery) (ClanPager, error) {
 		q.Add("minScore", fmt.Sprintf("%d", query.MinScore))
 	}
 
-	if query.MinMembers > 1 {
+	// Yes, what you're reading is correct, minMembers needs to be >= 2
+	if query.MinMembers >= 2 {
 		q.Add("minMembers", fmt.Sprintf("%d", query.MinMembers))
 	}
 
-	if query.MaxMembers <= 50 {
+	// maxMembers cannot be zero
+	if query.MaxMembers >= 1 && query.MaxMembers <= 50 {
 		q.Add("maxMembers", fmt.Sprintf("%d", query.MaxMembers))
 	}
 
