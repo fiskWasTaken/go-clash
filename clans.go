@@ -87,11 +87,18 @@ type CurrentWar struct {
 	State                string           `json:"state"`
 	RawCollectionEndTime string           `json:"collectionEndTime"`
 	Clan                 WarClanDetails   `json:"clan"`
+	Clans                []WarClanDetails `json:"clan"`
 	Participants         []WarParticipant `json:"participants"`
+	RawWarEndTime        string           `json:"warEndTime"`
 }
 
 func (w *CurrentWar) CollectionEndTime() time.Time {
 	parsed, _ := time.Parse(TimeLayout, w.RawCollectionEndTime)
+	return parsed
+}
+
+func (w *CurrentWar) WarEndTime() time.Time {
+	parsed, _ := time.Parse(TimeLayout, w.RawWarEndTime)
 	return parsed
 }
 
