@@ -43,11 +43,12 @@ type MemberPager struct {
 }
 
 type WarParticipant struct {
-	Tag           string `json:"tag"`
-	Name          string `json:"name"`
-	CardsEarned   int    `json:"cardsEarned"`
-	BattlesPlayed int    `json:"battlesPlayed"`
-	Wins          int    `json:"wins"`
+	Tag                        string `json:"tag"`
+	Name                       string `json:"name"`
+	CollectionDayBattlesPlayed int    `json:"collectionDayBattlesPlayed"`
+	CardsEarned                int    `json:"cardsEarned"`
+	BattlesPlayed              int    `json:"battlesPlayed"`
+	Wins                       int    `json:"wins"`
 }
 
 type WarClanDetails struct {
