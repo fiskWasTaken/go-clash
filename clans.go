@@ -87,7 +87,7 @@ type CurrentWar struct {
 	State                string           `json:"state"`
 	RawCollectionEndTime string           `json:"collectionEndTime"`
 	Clan                 WarClanDetails   `json:"clan"`
-	Clans                []WarClanDetails `json:"clan"`
+	Clans                []WarClanDetails `json:"clans"`
 	Participants         []WarParticipant `json:"participants"`
 	RawWarEndTime        string           `json:"warEndTime"`
 }
