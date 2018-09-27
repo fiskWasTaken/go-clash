@@ -131,6 +131,7 @@ type Battle struct {
 	TournamentTag           string         `json:"tournamentTag"`
 	ChallengeId             int            `json:"challengeId"`
 	ChallengeWinCountBefore int            `json:"challengeWinCountBefore"`
+	ReplayTag               string         `json:"replayTag,omitempty"`
 }
 
 type BattleOutcome struct {
