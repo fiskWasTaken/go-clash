@@ -97,7 +97,7 @@ type VerificationResult struct {
 	Status string `json:"status"`
 }
 
-func (v *VerificationResult) isValid() bool {
+func (v *VerificationResult) IsValid() bool {
 	return v.Status == "ok"
 }
 
