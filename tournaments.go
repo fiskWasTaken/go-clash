@@ -68,12 +68,12 @@ func (c *Client) Tournament(tag string) *TournamentService {
 
 // Get information about a single tournament by a tournament tag.
 func (i *TournamentService) Get() (Tournament, error) {
-	url := fmt.Sprintf("/v1/tournaments/%s", normaliseTag(i.tag))
-	req, err := i.c.newRequest("GET", url, nil)
+	url := fmt.Sprintf("/v1/tournaments/%s", NormaliseTag(i.tag))
+	req, err := i.c.NewRequest("GET", url, nil)
 	var tournament Tournament
 
 	if err == nil {
-		_, err = i.c.do(req, &tournament)
+		_, err = i.c.Do(req, &tournament)
 	}
 
 	return tournament, err
@@ -84,7 +84,7 @@ func (i *TournamentService) Get() (Tournament, error) {
 // It is not possible to specify ordering for results so clients should not
 // rely on any specific ordering as that may change in the future releases of the API.
 func (i *TournamentsService) Search(query *TournamentQuery) (TournamentPager, error) {
-	req, err := i.c.newRequest("GET", "/v1/tournaments", nil)
+	req, err := i.c.NewRequest("GET", "/v1/tournaments", nil)
 	q := req.URL.Query()
 
 	q.Add("name", query.Name)
@@ -106,7 +106,7 @@ func (i *TournamentsService) Search(query *TournamentQuery) (TournamentPager, er
 	var tournaments TournamentPager
 
 	if err == nil {
-		_, err = i.c.do(req, &tournaments)
+		_, err = i.c.Do(req, &tournaments)
 	}
 
 	return tournaments, err

@@ -142,7 +142,7 @@ type BattleOutcome struct {
 
 // Find a player in the battle by tag. Return an error if the tag could not be found.
 func (b *Battle) PlayerByTag(tag string) (BattlePlayer, error) {
-	tag = normaliseTag(tag)
+	tag = NormaliseTag(tag)
 
 	for _, player := range append(b.Team, b.Opponent...) {
 		if player.Tag == tag {
@@ -192,12 +192,12 @@ func (c *Client) Player(tag string) *PlayerService {
 
 // Get list of reward chests that the player will receive next in the game.
 func (i *PlayerService) UpcomingChests() (UpcomingChests, error) {
-	url := fmt.Sprintf("/v1/players/%s/upcomingchests", normaliseTag(i.tag))
-	req, err := i.c.newRequest("GET", url, nil)
+	url := fmt.Sprintf("/v1/players/%s/upcomingchests", NormaliseTag(i.tag))
+	req, err := i.c.NewRequest("GET", url, nil)
 	var chests UpcomingChests
 
 	if err == nil {
-		_, err = i.c.do(req, &chests)
+		_, err = i.c.Do(req, &chests)
 	}
 
 	return chests, err
@@ -205,12 +205,12 @@ func (i *PlayerService) UpcomingChests() (UpcomingChests, error) {
 
 // Get list of recent battle results for a player.
 func (i *PlayerService) BattleLog() (Battles, error) {
-	url := fmt.Sprintf("/v1/players/%s/battlelog", normaliseTag(i.tag))
-	req, err := i.c.newRequest("GET", url, nil)
+	url := fmt.Sprintf("/v1/players/%s/battlelog", NormaliseTag(i.tag))
+	req, err := i.c.NewRequest("GET", url, nil)
 	var list Battles
 
 	if err == nil {
-		_, err = i.c.do(req, &list)
+		_, err = i.c.Do(req, &list)
 	}
 
 	return list, err
@@ -219,12 +219,12 @@ func (i *PlayerService) BattleLog() (Battles, error) {
 // Get information about a single player by player tag. Player tags
 // can be found either in game or by from clan member lists.
 func (i *PlayerService) Get() (Player, error) {
-	url := fmt.Sprintf("/v1/players/%s", normaliseTag(i.tag))
-	req, err := i.c.newRequest("GET", url, nil)
+	url := fmt.Sprintf("/v1/players/%s", NormaliseTag(i.tag))
+	req, err := i.c.NewRequest("GET", url, nil)
 	var player Player
 
 	if err == nil {
-		_, err = i.c.do(req, &player)
+		_, err = i.c.Do(req, &player)
 	}
 
 	return player, err
@@ -235,12 +235,12 @@ func (i *PlayerService) Get() (Player, error) {
 // This API call can be used by a player to prove that they own a particular game account as the token
 // can only be retrieved inside the game from settings view.
 func (i *PlayerService) VerifyToken(token string) (VerificationResult, error) {
-	url := fmt.Sprintf("/v1/players/%s/verifytoken", normaliseTag(i.tag))
-	req, err := i.c.newRequest("POST", url, map[string]string{"token": token})
+	url := fmt.Sprintf("/v1/players/%s/verifytoken", NormaliseTag(i.tag))
+	req, err := i.c.NewRequest("POST", url, map[string]string{"token": token})
 	var result VerificationResult
 
 	if err == nil {
-		_, err = i.c.do(req, &result)
+		_, err = i.c.Do(req, &result)
 	}
 
 	return result, err

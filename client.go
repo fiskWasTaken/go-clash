@@ -60,7 +60,7 @@ func NewClient(token string) *Client {
 }
 
 // make a new request object.
-func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(method, path string, body interface{}) (*http.Request, error) {
 	rel := &url.URL{Path: path}
 	u := c.BaseURL.ResolveReference(rel)
 	var buf io.ReadWriter
@@ -89,7 +89,7 @@ func (c *Client) newRequest(method, path string, body interface{}) (*http.Reques
 }
 
 // execute the request.
-func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.httpClient.Do(req)
 
 	if err != nil {
@@ -113,7 +113,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 }
 
 // make sure the tag is prefixed with a # if it doesn't have one
-func normaliseTag(tag string) string {
+func NormaliseTag(tag string) string {
 	if len(tag) > 0 && tag[0] == '#' {
 		return tag
 	}
