@@ -21,6 +21,7 @@ type Clan struct {
 	Description       string       `json:"description"`
 	BadgeId           int          `json:"badgeId"`
 	ClanScore         int          `json:"clanScore"`
+	ClanWarTrophies   int          `json:"clanWarTrophies"`
 	Location          Location     `json:"location"`
 	RequiredTrophies  int          `json:"requiredTrophies"`
 	DonationsPerWeek  int          `json:"donationsPerWeek"`
