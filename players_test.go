@@ -1,9 +1,9 @@
 package clash_test
 
 import (
-	"testing"
 	"github.com/fiskie/go-clash"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var teamWin = clash.Battle{

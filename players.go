@@ -1,17 +1,18 @@
 package clash
 
 import (
+	"errors"
 	"fmt"
 	"time"
-	"errors"
 )
 
 type Card struct {
-	Name     string   `json:"name"`
-	Level    int      `json:"level"`
-	MaxLevel int      `json:"maxLevel"`
-	Count    int      `json:"count"`
-	IconUrls IconUrls `json:"iconUrls"`
+	Name      string   `json:"name"`
+	Level     int      `json:"level"`
+	MaxLevel  int      `json:"maxLevel"`
+	Count     int      `json:"count"`
+	IconUrls  IconUrls `json:"iconUrls"`
+	StarLevel int      `json:"starLevel"`
 }
 
 // Return the internal client level for the card, as these are zero-indexed
@@ -89,6 +90,7 @@ type Player struct {
 	CurrentDeck           []Card        `json:"currentDeck"`
 	CurrentFavouriteCard  FavouriteCard `json:"currentFavouriteCard"`
 	LeagueStatistics      LeagueStats   `json:"leagueStatistics"`
+	StarPoints            int           `json:"starPoints"`
 }
 
 type VerificationResult struct {
@@ -112,7 +114,7 @@ type BattlePlayer struct {
 	StartingTrophies int    `json:"startingTrophies"`
 	TrophyChange     int    `json:"trophyChange"`
 	Crowns           int    `json:"crowns"`
-	Clan struct {
+	Clan             struct {
 		Tag     string `json:"tag"`
 		Name    string `json:"name"`
 		BadgeId int    `json:"badgeId"`

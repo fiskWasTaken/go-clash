@@ -1,10 +1,10 @@
 package clash_test
 
 import (
+	"github.com/fiskie/go-clash"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/assert"
-	"github.com/fiskie/go-clash"
 )
 
 // test that our time layout is right, since we use this to convert time values to an object.

@@ -1,12 +1,14 @@
 package clash
 
 import (
-	"net/url"
-	"net/http"
-	"io"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
 )
 
 // This is the time format used by time fields -- we'll be using it to provide cleaner APIs.
@@ -17,6 +19,7 @@ type Client struct {
 	UserAgent  string
 	Bearer     string
 	httpClient http.Client
+	logger     *log.Logger
 }
 
 // Base struct for paged queries.
@@ -52,10 +55,12 @@ type Paging struct {
 
 func NewClient(token string) *Client {
 	base, _ := url.Parse("https://api.clashroyale.com")
+	logger := log.New(os.Stdout, "(go-clash) ", 0)
 
 	return &Client{
 		Bearer:  token,
 		BaseURL: base,
+		logger:  logger,
 	}
 }
 
@@ -90,15 +95,19 @@ func (c *Client) NewRequest(method, path string, body interface{}) (*http.Reques
 
 // execute the request.
 func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
+	c.logger.Println(req.Method, req.URL.String())
 	resp, err := c.httpClient.Do(req)
 
 	if err != nil {
+		c.logger.Println("Request error", err.Error())
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
+		c.logger.Println("Unexpected status code", resp.StatusCode)
+
 		errorResponse := &ErrorBody{}
 		err = json.NewDecoder(resp.Body).Decode(errorResponse)
 
