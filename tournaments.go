@@ -33,6 +33,8 @@ type Tournament struct {
 	RawStartedTime      string             `json:"startedTime"`
 	MembersList         []TournamentMember `json:"membersList"`
 	FirstPlaceCardPrize int                `json:"firstPlaceCardPrize"`
+	GameMode            GameMode           `json:"gameMode"`
+	LevelCap            int                `json:"levelCap"`
 }
 
 func (t *Tournament) CreatedTime() time.Time {
