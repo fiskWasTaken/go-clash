@@ -39,6 +39,14 @@ type Achievement struct {
 	Info   string `json:"info"`
 }
 
+type Badge struct {
+	Name     string `json:"name"`
+	Level    int    `json:"level,omitempty"`
+	MaxLevel int    `json:"maxLevel,omitempty"`
+	Progress int    `json:"progress,omitempty"`
+	Target   int    `json:"target,omitempty"`
+}
+
 type PlayerClan struct {
 	Tag     string `json:"tag"`
 	Name    string `json:"name"`
@@ -86,6 +94,7 @@ type Player struct {
 	Clan                  PlayerClan    `json:"clan"`
 	Arena                 Arena         `json:"arena"`
 	Achievements          []Achievement `json:"achievements"`
+	Badges                []Badge       `json:"badges"`
 	Cards                 []Card        `json:"cards"`
 	CurrentDeck           []Card        `json:"currentDeck"`
 	CurrentFavouriteCard  FavouriteCard `json:"currentFavouriteCard"`
@@ -114,7 +123,7 @@ type BattlePlayer struct {
 	StartingTrophies int    `json:"startingTrophies"`
 	TrophyChange     int    `json:"trophyChange"`
 	Crowns           int    `json:"crowns"`
-	Clan             struct {
+	Clan struct {
 		Tag     string `json:"tag"`
 		Name    string `json:"name"`
 		BadgeId int    `json:"badgeId"`
