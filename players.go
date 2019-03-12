@@ -123,6 +123,10 @@ type BattlePlayer struct {
 	StartingTrophies int    `json:"startingTrophies"`
 	TrophyChange     int    `json:"trophyChange"`
 	Crowns           int    `json:"crowns"`
+	// king tower hit points is missing from the response if it is zero.
+	KingTowerHitPoints int `json:"kingTowerHitPoints,omitempty"`
+	// ditto. princess tower hit points are an array of values.
+	PrincessTowersHitPoints []int `json:"princessTowersHitPoints,omitempty"`
 	Clan struct {
 		Tag     string `json:"tag"`
 		Name    string `json:"name"`
