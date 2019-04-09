@@ -116,6 +116,12 @@ type ClanMember struct {
 	Donations         int    `json:"donations"`
 	DonationsReceived int    `json:"donationsReceived"`
 	ClanChestPoints   int    `json:"clanChestPoints"`
+	RawLastSeen       string `json:"lastSeen"`
+}
+
+func (c *ClanMember) LastSeen() time.Time {
+	parsed, _ := time.Parse(TimeLayout, c.RawLastSeen)
+	return parsed
 }
 
 type ClansService struct {
