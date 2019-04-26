@@ -64,9 +64,11 @@ func NewClient(token string) *Client {
 		logger:  logger,
 	}
 
-	client.httpClient.Timeout = time.Second * 10
-
 	return client
+}
+
+func (c *Client) SetTimeout (duration time.Duration) {
+	c.httpClient.Timeout = duration
 }
 
 // make a new request object.
