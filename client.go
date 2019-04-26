@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // This is the time format used by time fields -- we'll be using it to provide cleaner APIs.
@@ -57,11 +58,15 @@ func NewClient(token string) *Client {
 	base, _ := url.Parse("https://api.clashroyale.com")
 	logger := log.New(os.Stdout, "(go-clash) ", 0)
 
-	return &Client{
+	client := &Client{
 		Bearer:  token,
 		BaseURL: base,
 		logger:  logger,
 	}
+
+	client.httpClient.Timeout = time.Second * 10
+
+	return client
 }
 
 // make a new request object.
